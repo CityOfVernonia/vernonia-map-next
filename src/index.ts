@@ -12,6 +12,8 @@ import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
 import Vernonia from 'cov/Vernonia';
 
+import Search from '@arcgis/core/widgets/Search';
+import LayerSearchSource from '@arcgis/core/widgets/Search/LayerSearchSource';
 import BasemapToggle from '@arcgis/core/widgets/BasemapToggle';
 import LayerList from '@arcgis/core/widgets/LayerList';
 import Legend from '@arcgis/core/widgets/Legend';
@@ -86,7 +88,7 @@ const loadApp = () => {
       ground: 'world-elevation',
     }),
     zoom: 15,
-    center: [-123.185, 45.859],
+    center: [-123.18291178267039, 45.8616094153766],
     constraints: {
       rotationEnabled: false,
     },
@@ -109,6 +111,7 @@ const loadApp = () => {
       })
       .then((extent: esri.Extent) => {
         view.goTo(extent);
+        console.log(extent);
       });
   });
 
@@ -120,13 +123,71 @@ const loadApp = () => {
     widgets: [
       {
         placement: 'view',
+        position: 'top-right',
+        widget: new Search({
+          view,
+          searchAllEnabled: false,
+          includeDefaultSources: false,
+          sources: [
+            new LayerSearchSource({
+              layer: taxLots,
+              outFields: ['*'],
+              searchFields: ['ADDRESS'],
+              suggestionTemplate: '{ADDRESS}',
+              placeholder: 'Tax lot by address',
+              name: 'Tax lot by address',
+              zoomScale: 3000,
+              filter: {
+                where: 'BNDY_CLIPPED = 0',
+              },
+            }),
+            new LayerSearchSource({
+              layer: taxLots,
+              outFields: ['*'],
+              searchFields: ['OWNER'],
+              suggestionTemplate: '{OWNER}',
+              placeholder: 'Tax lot by owner',
+              name: 'Tax lot by owner',
+              zoomScale: 3000,
+              filter: {
+                where: 'BNDY_CLIPPED = 0',
+              },
+            }),
+            new LayerSearchSource({
+              layer: taxLots,
+              outFields: ['*'],
+              searchFields: ['ACCOUNT_IDS'],
+              suggestionTemplate: '{ACCOUNT_IDS}',
+              placeholder: 'Tax lot by tax account',
+              name: 'Tax lot by tax account',
+              zoomScale: 3000,
+              filter: {
+                where: 'BNDY_CLIPPED = 0',
+              },
+            }),
+            new LayerSearchSource({
+              layer: taxLots,
+              outFields: ['*'],
+              searchFields: ['TAXLOT_ID'],
+              suggestionTemplate: '{TAXLOT_ID}',
+              placeholder: 'Tax lot by map and lot',
+              name: 'Tax lot by map and lot',
+              zoomScale: 3000,
+              filter: {
+                where: 'BNDY_CLIPPED = 0',
+              },
+            }),
+          ],
+        }),
+      },
+      {
+        placement: 'view',
         position: 'bottom-right',
         widget: new BasemapToggle({
           view,
           nextBasemap,
         }),
       },
-
       {
         placement: 'operational',
         title: 'Layers',
