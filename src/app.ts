@@ -20,7 +20,7 @@ import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import GroupLayer from '@arcgis/core/layers/GroupLayer';
 
 // popups
-import TaxLotPopup from './core/popups/TaxLotPopup';
+import TaxLotPopup from '@vernonia/core/popups/TaxLotPopup';
 // import TaxMapPopup from './core/widgets/TaxMaps/TaxMapPopup';
 
 // search
@@ -32,7 +32,7 @@ import Viewer from './core/Viewer';
 import MarkupViewModel from './core/viewModels/MarkupViewModel';
 
 // widgets
-import LayerListLegend from './core/widgets/LayerListLegend';
+import LayerListLegend from '@vernonia/core/widgets/LayerListLegend';
 import Measure from './core/widgets/Measure';
 import Print from './core/widgets/Print';
 // import TaxMaps from './core/widgets/TaxMaps';
