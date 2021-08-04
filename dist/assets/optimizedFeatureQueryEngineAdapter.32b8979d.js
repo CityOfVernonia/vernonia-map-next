@@ -1,1 +1,0 @@
-import{t}from"./centroid.f7592ee4.js";import{kd as e,ch as r}from"./vendor.9770a310.js";const o={getObjectId:t=>t.objectId,getAttributes:t=>t.attributes,getAttribute:(t,e)=>t.attributes[e],cloneWithGeometry:(t,r)=>new e(r,t.attributes,null,t.objectId),getGeometry:t=>t.geometry,getCentroid:(e,o)=>(e.centroid||(e.centroid=t(new r,e.geometry,o.hasZ,o.hasM)),e.centroid)};export{o};

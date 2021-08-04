@@ -1,1 +1,0 @@
-const t=(t,a,c)=>Math.max(a,Math.min(t,c));export{t as c}
