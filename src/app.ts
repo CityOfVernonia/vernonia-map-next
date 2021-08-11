@@ -1,13 +1,18 @@
-// import esri = __esri;
-
+/**
+ * imports
+ */
 // esri config and auth
 import esriConfig from '@arcgis/core/config';
 import Portal from '@arcgis/core/portal/Portal';
 import OAuthInfo from '@arcgis/core/identity/OAuthInfo';
 import OAuthViewModel from './core/viewModels/OAuthViewModel';
 
-// loading screen
+// utils
+import { watch } from '@arcgis/core/core/watchUtils';
+
+// loading screen and disclaimer
 import LoadingScreen from './core/widgets/LoadingScreen';
+import DisclaimerModal from './core/widgets/DisclaimerModal';
 
 // map, view and layers
 import Map from '@arcgis/core/Map';
@@ -15,13 +20,17 @@ import MapView from '@arcgis/core/views/MapView';
 import Basemap from '@arcgis/core/Basemap';
 import BingMapsLayer from '@arcgis/core/layers/BingMapsLayer';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import GroupLayer from '@arcgis/core/layers/GroupLayer';
 import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
-import GroupLayer from '@arcgis/core/layers/GroupLayer';
+
+// tax lot symbols
+import SimpleRenderer from '@arcgis/core/renderers/SimpleRenderer';
+import { SimpleFillSymbol } from '@arcgis/core/symbols';
+import Color from '@arcgis/core/Color';
 
 // popups
-import TaxLotPopup from '@vernonia/core/popups/TaxLotPopup';
-// import TaxMapPopup from './core/widgets/TaxMaps/TaxMapPopup';
+import TaxLotPopup from './core/popups/TaxLotPopup';
 
 // search
 import SearchViewModel from '@arcgis/core/widgets/Search/SearchViewModel';
@@ -29,24 +38,16 @@ import LayerSearchSource from '@arcgis/core/widgets/Search/LayerSearchSource';
 
 // the viewer
 import Viewer from './core/Viewer';
-import MarkupViewModel from './core/viewModels/MarkupViewModel';
 
-// widgets
-import LayerListLegend from '@vernonia/core/widgets/LayerListLegend';
+import LayerListLegend from './core/widgets/LayerListLegend';
 import Measure from './core/widgets/Measure';
 import Print from './core/widgets/Print';
-// import TaxMaps from './core/widgets/TaxMaps';
+import TaxMaps from './core/widgets/TaxMaps';
 
-// config portal and auth
+/**
+ * config portal and auth
+ */
 esriConfig.portalUrl = 'https://gisportal.vernonia-or.gov/portal';
-
-// app config and init loading screen
-const title = 'Vernonia Map';
-
-const loadingScreen = new LoadingScreen({
-  title,
-});
-
 const portal = new Portal();
 
 const oAuthViewModel = new OAuthViewModel({
@@ -58,61 +59,37 @@ const oAuthViewModel = new OAuthViewModel({
   }),
 });
 
+const title = 'Vernonia Map';
+
+const loadingScreen = new LoadingScreen({
+  title,
+});
+
 /**
- * load app after auth successfully loaded
+ * Load the app (oauth callback)
+ * @param authed boolean
  */
-const loadApp = (): void => {
+const loadApp = (authed: boolean): void => {
+  if (!authed && !DisclaimerModal.isAccepted()) {
+    new DisclaimerModal();
+  }
+
+
   // layers
-  const taxMaps = new MapImageLayer({
-    portalItem: {
-      id: '9c3b13af5a0b4fe7b57316d14259f893',
-    },
-    opacity: 0.5,
-    listMode: 'hide',
-    visible: true, // make sure
-  });
-
-  const taxMapBoundaries = new FeatureLayer({
-    portalItem: {
-      id: '5bbd874a1b4f4674a03ce5ba25e08bf2',
-    },
-    title: 'Tax Maps',
-    visible: false,
-    // popupTemplate: new TaxMapPopup(),
-  });
-
-  const soils = new FeatureLayer({
-    visible: false,
-    portalItem: {
-      id: '1bb66a7c50714426967cadee1a753e0c',
-    },
-  });
-
-  const wetlands = new GroupLayer({
-    visible: false,
-    title: 'Wetlands',
-    layers: [
-      new FeatureLayer({
-        visible: false,
-        title: 'Vernonia Artificial Wetlands',
-        portalItem: {
-          id: '73ba1a7ff19e42b38b3910b6d02beafb',
-        },
+  const nextBasemap = new Basemap({
+    baseLayers: [
+      new BingMapsLayer({
+        style: 'aerial',
+        key: 'Ao8BC5dsixV4B1uhNaUAK_ejjm6jtZ8G3oXQ5c5Q-WtmpORHOMklBvzqSIEXwdxe',
       }),
-      new FeatureLayer({
-        visible: false,
-        title: 'Vernonia LWI 2001',
+      new VectorTileLayer({
         portalItem: {
-          id: '5452cb87c2934546aa0ac48653231201',
-        },
-      }),
-      new FeatureLayer({
-        title: 'Oregon Wetlands',
-        portalItem: {
-          id: 'fa8d00ea829c40979b882d2af3b6ae76',
+          id: 'f9a5da71cd61480680e456f0a3d4e1ce',
         },
       }),
     ],
+    thumbnailUrl:
+      'https://gisportal.vernonia-or.gov/portal/sharing/rest/content/items/b6130a13beb74026b89960fbd424021f/info/thumbnail/thumbnail1579125721359.png?f=json',
   });
 
   const zoning = new FeatureLayer({
@@ -122,11 +99,23 @@ const loadApp = (): void => {
     },
   });
 
-  const buildingFootprints = new FeatureLayer({
-    visible: false,
-    portalItem: {
-      id: 'ffb2bf53ea0b4223bf271e560acb3a56',
+  const taxLotsSymbol = new SimpleFillSymbol({
+    color: [0, 0, 0, 0],
+    outline: {
+      color: [152, 114, 11, 1],
+      width: 0.5,
     },
+  });
+
+  const taxLots = new FeatureLayer({
+    portalItem: {
+      id: 'a6063eb199e640e0bbc2d5ceca23de9a',
+    },
+    opacity: 0.75,
+    popupTemplate: new TaxLotPopup(),
+    renderer: new SimpleRenderer({
+      symbol: taxLotsSymbol,
+    }),
   });
 
   const cityLimits = new FeatureLayer({
@@ -140,14 +129,6 @@ const loadApp = (): void => {
       id: '2f760ba990ab4d6e831d04b85a8a0bf3',
     },
     visible: false,
-  });
-
-  const taxLots = new FeatureLayer({
-    portalItem: {
-      id: 'a6063eb199e640e0bbc2d5ceca23de9a',
-    },
-    opacity: 0.75,
-    popupTemplate: new TaxLotPopup(),
   });
 
   const floodHazard = new GroupLayer({
@@ -164,6 +145,48 @@ const loadApp = (): void => {
         layer.visible = false;
       }
     });
+  });
+
+  const taxMapsLayer = new MapImageLayer({
+    portalItem: {
+      id: '9c3b13af5a0b4fe7b57316d14259f893',
+    },
+    listMode: 'hide',
+    legendEnabled: false,
+    opacity: 0.4,
+  });
+
+  const taxMapBoundaries = new FeatureLayer({
+    portalItem: {
+      id: '5bbd874a1b4f4674a03ce5ba25e08bf2',
+    },
+    title: 'Tax Map Boundaries',
+    visible: false,
+  });
+
+  // view
+  const view = new MapView({
+    map: new Map({
+      basemap: new Basemap({
+        portalItem: {
+          id: 'f36cd213cc934d2391f58f389fc9eaec',
+        },
+      }),
+      layers: [taxMapsLayer, zoning, floodHazard, taxLots, ugb, cityLimits, taxMapBoundaries],
+      ground: 'world-elevation',
+    }),
+    zoom: 15,
+    center: [-123.18291178267039, 45.8616094153766],
+    constraints: {
+      rotationEnabled: false,
+    },
+    popup: {
+      dockEnabled: true,
+      dockOptions: {
+        position: 'bottom-left',
+        breakpoint: false,
+      },
+    },
   });
 
   const searchViewModel = new SearchViewModel({
@@ -221,75 +244,22 @@ const loadApp = (): void => {
     ],
   });
 
-  // view
-  const view = new MapView({
-    map: new Map({
-      basemap: new Basemap({
-        portalItem: {
-          id: 'f36cd213cc934d2391f58f389fc9eaec',
-        },
-      }),
-      layers: [
-        taxMaps,
-        soils,
-        wetlands,
-        zoning,
-        buildingFootprints,
-        floodHazard,
-        taxLots,
-        ugb,
-        cityLimits,
-        taxMapBoundaries,
-      ],
-      ground: 'world-elevation',
-    }),
-    zoom: 15,
-    center: [-123.18291178267039, 45.8616094153766],
-    constraints: {
-      rotationEnabled: false,
-    },
-    popup: {
-      dockEnabled: true,
-      dockOptions: {
-        position: 'bottom-left',
-        breakpoint: false,
-      },
-    },
-  });
-
   new Viewer({
     view,
     title,
     searchViewModel,
     oAuthViewModel,
-    markupViewModel: new MarkupViewModel({ view }),
-    nextBasemap: new Basemap({
-      baseLayers: [
-        new BingMapsLayer({
-          style: 'aerial',
-          key: 'Ao8BC5dsixV4B1uhNaUAK_ejjm6jtZ8G3oXQ5c5Q-WtmpORHOMklBvzqSIEXwdxe',
-        }),
-        new VectorTileLayer({
-          portalItem: {
-            id: 'f9a5da71cd61480680e456f0a3d4e1ce',
-          },
-        }),
-      ],
-      thumbnailUrl:
-        'https://gisportal.vernonia-or.gov/portal/sharing/rest/content/items/b6130a13beb74026b89960fbd424021f/info/thumbnail/thumbnail1579125721359.png?f=json',
-    }),
+    nextBasemap,
     widgets: [
       {
         widget: new LayerListLegend({ view }),
-        icon: 'layers',
         text: 'Layers',
+        icon: 'layers',
       },
       {
-        widget: new Measure({
-          view,
-        }),
-        icon: 'measure',
+        widget: new Measure({ view }),
         text: 'Measure',
+        icon: 'measure',
       },
       {
         widget: new Print({
@@ -297,34 +267,45 @@ const loadApp = (): void => {
           printServiceUrl:
             'https://gisportal.vernonia-or.gov/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task',
         }),
-        icon: 'print',
         text: 'Print',
+        icon: 'print',
       },
-      // {
-      //   widget: new TaxMaps({
-      //     view,
-      //     featureLayer: taxMapBoundaries,
-      //     mapImageLayer: taxMaps,
-      //   }),
-      //   icon: 'map',
-      //   text: 'Tax Maps',
-      // },
+      {
+        widget: new TaxMaps({
+          view,
+          featureLayer: taxMapBoundaries,
+          mapImageLayer: taxMapsLayer,
+        }),
+        text: 'Tax Maps',
+        icon: 'color-coded-map',
+      },
     ],
   });
 
   view.when(() => {
     loadingScreen.end();
-  });
-};
 
+    taxLots.when(() => {
+      watch(view, 'map.basemap', (basemap: Basemap) => {
+        taxLotsSymbol.outline.color =
+          basemap === nextBasemap ? new Color([246, 213, 109, 1]) : new Color([152, 114, 11, 1]);
+      });
+    });
+  });
+}
+
+/**
+ * Error callback for portal and oauth
+ * @param error 
+ */
 const authLoadError = (error: any) => {
   console.log(error);
 
   const div = document.createElement('div');
   div.innerHTML = `
-    <h3 style="margin-left: 1rem;">Authorization Error</h3>
+    <h3 style="margin-left: 1rem;">Application Error</h3>
     <p style="margin-left: 1rem;">Please reload page.</p>
-    <p style="margin-left: 1rem;">If error continues contact please application maintainer.</p>
+    <p style="margin-left: 1rem;">If error continues contact the City.</p>
   `;
   document.body.append(div);
   loadingScreen.end();
