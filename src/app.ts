@@ -43,6 +43,7 @@ import LayerListLegend from './core/widgets/LayerListLegend';
 import Measure from './core/widgets/Measure';
 import Print from './core/widgets/Print';
 import TaxMaps from './core/widgets/TaxMaps';
+import TaxLotSurveys from './core/widgets/TaxLotSurveys';
 
 /**
  * config portal and auth
@@ -73,7 +74,6 @@ const loadApp = (authed: boolean): void => {
   if (!authed && !DisclaimerModal.isAccepted()) {
     new DisclaimerModal();
   }
-
 
   // layers
   const nextBasemap = new Basemap({
@@ -279,6 +279,18 @@ const loadApp = (authed: boolean): void => {
         text: 'Tax Maps',
         icon: 'color-coded-map',
       },
+      {
+        widget: new TaxLotSurveys({
+          view,
+          taxLotLayer: taxLots,
+          surveysLayer: new FeatureLayer({
+            url: 'https://gis.columbiacountymaps.com/server/rest/services/BaseData/Survey_Research/FeatureServer/0',
+            outFields: ['*'],
+          }),
+        }),
+        text: 'Tax Lot Surveys',
+        icon: 'analysis',
+      },
     ],
   });
 
@@ -292,11 +304,11 @@ const loadApp = (authed: boolean): void => {
       });
     });
   });
-}
+};
 
 /**
  * Error callback for portal and oauth
- * @param error 
+ * @param error
  */
 const authLoadError = (error: any) => {
   console.log(error);
