@@ -41,6 +41,7 @@ import Viewer from './core/Viewer';
 
 import LayerListLegend from './core/widgets/LayerListLegend';
 import Measure from './core/widgets/Measure';
+import Markup from './core/widgets/Markup';
 import Print from './core/widgets/Print';
 import TaxMaps from './core/widgets/TaxMaps';
 import TaxLotSurveys from './core/widgets/TaxLotSurveys';
@@ -260,6 +261,11 @@ const loadApp = (authed: boolean): void => {
         widget: new Measure({ view }),
         text: 'Measure',
         icon: 'measure',
+      },
+      {
+        widget: new Markup({ view }),
+        text: 'Markup',
+        icon: 'pencil',
       },
       {
         widget: new Print({
