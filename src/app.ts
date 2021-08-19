@@ -245,11 +245,14 @@ const loadApp = (authed: boolean): void => {
     ],
   });
 
+  const markup = new Markup({ view });
+
   new Viewer({
     view,
     title,
     searchViewModel,
     oAuthViewModel,
+    markup,
     nextBasemap,
     widgets: [
       {
@@ -263,7 +266,7 @@ const loadApp = (authed: boolean): void => {
         icon: 'measure',
       },
       {
-        widget: new Markup({ view }),
+        widget: markup,
         text: 'Markup',
         icon: 'pencil',
       },
