@@ -37,14 +37,15 @@ import SearchViewModel from '@arcgis/core/widgets/Search/SearchViewModel';
 import LayerSearchSource from '@arcgis/core/widgets/Search/LayerSearchSource';
 
 // the viewer
-import Viewer from './core/Viewer';
+import Viewer from './core/layouts/Viewer';
 
 import LayerListLegend from './core/widgets/LayerListLegend';
-import Measure from './core/widgets/Measure';
 import Markup from './core/widgets/Markup';
 import Print from './core/widgets/Print';
 import TaxMaps from './core/widgets/TaxMaps';
 import TaxLotSurveys from './core/widgets/TaxLotSurveys';
+
+import Measure from './core/widgets/Measure';
 
 /**
  * config portal and auth
@@ -254,7 +255,7 @@ const loadApp = (authed: boolean): void => {
     oAuthViewModel,
     markup,
     nextBasemap,
-    widgets: [
+    uiWidgets: [
       {
         widget: new LayerListLegend({ view }),
         text: 'Layers',
@@ -301,6 +302,7 @@ const loadApp = (authed: boolean): void => {
         icon: 'analysis',
       },
     ],
+    menuWidgets: [],
   });
 
   view.when(() => {
