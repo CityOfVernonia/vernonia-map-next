@@ -253,7 +253,7 @@ const loadApp = (authed: boolean): void => {
     title,
     searchViewModel,
     oAuthViewModel,
-    markup,
+    // markup,
     nextBasemap,
     uiWidgets: [
       {
