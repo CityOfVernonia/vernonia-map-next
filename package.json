@@ -22,8 +22,8 @@
   "homepage": "https://github.com/CityOfVernonia/vernonia-map-next#readme",
   "devDependencies": {
     "@types/pouchdb": "^6.4.0",
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.30.0",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -33,12 +33,12 @@
     "sass": "^1.39.0",
     "tslib": "^2.3.1",
     "typescript": "^4.4.2",
-    "vite": "^2.5.3"
+    "vite": "^2.5.5"
   },
   "dependencies": {
     "@arcgis/core": "^4.20.2",
     "@esri/calcite-components": "^1.0.0-beta.63",
-    "@vernonia/core": "^1.0.29"
+    "@vernonia/core": "^1.0.30"
   },
   "eslintConfig": {
     "env": {

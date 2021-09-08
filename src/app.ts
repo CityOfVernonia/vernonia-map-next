@@ -44,8 +44,9 @@ import Markup from './core/widgets/Markup';
 import Print from './core/widgets/Print';
 import TaxMaps from './core/widgets/TaxMaps';
 import TaxLotSurveys from './core/widgets/TaxLotSurveys';
-
 import Measure from './core/widgets/Measure';
+
+import AddLayers from './core/widgets/AddLayers';
 
 /**
  * config portal and auth
@@ -248,6 +249,49 @@ const loadApp = (authed: boolean): void => {
 
   const markup = new Markup({ view });
 
+  const addLayers = new AddLayers({
+    view,
+    layers: [
+      {
+        id: '17648051dc2145f9b2451486442a1778',
+        // title: 'Vernonia Addresses',
+        // snippet: 'City jurisdictional addresses.',
+        add: (layer: esri.Layer) => {
+          searchViewModel.sources.add(
+            new LayerSearchSource({
+              layer: layer,
+              outFields: ['*'],
+              searchFields: ['FULLADD'],
+              suggestionTemplate: '{FULLADD}, {MAIL_CITY}, OR {ZIP}',
+              placeholder: 'Vernonia addresses',
+              name: 'Vernonia addresses',
+              zoomScale: 3000,
+            }),
+          );
+        }
+      },
+    ],
+  });
+
+  if (authed) {
+    [
+      {
+        id: '99cb922f3519481eb8b67ecf0461612f',
+        // title: 'wastewater',
+      },
+      {
+        id: '8ad45fd25b7c4573929a4a6cba774ecf',
+        // title: 'water',
+      },
+      {
+        id: '100c699020a54c14ac89a23dbcb40560',
+        // title: 'stormwater',
+      },
+    ].forEach((portalItem: any) => {
+      addLayers.layers.push(portalItem);
+    });
+  }
+
   new Viewer({
     view,
     title,
@@ -302,7 +346,13 @@ const loadApp = (authed: boolean): void => {
         icon: 'analysis',
       },
     ],
-    menuWidgets: [],
+    menuWidgets: [
+      {
+        widget: addLayers,
+        text: 'Add Layers',
+        icon: 'add-layer',
+      },
+    ],
   });
 
   view.when(() => {
