@@ -45,7 +45,6 @@ import Print from './core/widgets/Print';
 import TaxMaps from './core/widgets/TaxMaps';
 import TaxLotSurveys from './core/widgets/TaxLotSurveys';
 import Measure from './core/widgets/Measure';
-
 import AddLayers from './core/widgets/AddLayers';
 
 /**
@@ -268,7 +267,27 @@ const loadApp = (authed: boolean): void => {
               zoomScale: 3000,
             }),
           );
-        }
+        },
+      },
+      {
+        id: '5452cb87c2934546aa0ac48653231201',
+        title: 'Vernonia Wetlands',
+        snippet: '2001 local wetland inventory.',
+      },
+      {
+        id: 'fa8d00ea829c40979b882d2af3b6ae76',
+        title: 'Oregon Wetlands',
+        snippet: 'DSL wetland layer.',
+      },
+      {
+        id: '23d76fb1df104b3e95e8c972c7c87aa0',
+        index: 0,
+        // title: '2018 State Imagery',
+        snippet: 'Oregon statewide imagery 2018.',
+        layerProperties: {
+          listMode: 'hide-children',
+          legendEnabled: false,
+        },
       },
     ],
   });
@@ -297,7 +316,7 @@ const loadApp = (authed: boolean): void => {
     title,
     searchViewModel,
     oAuthViewModel,
-    // markup,
+    markup,
     nextBasemap,
     uiWidgets: [
       {
