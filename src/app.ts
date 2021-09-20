@@ -46,6 +46,7 @@ import TaxMaps from './core/widgets/TaxMaps';
 import TaxLotSurveys from './core/widgets/TaxLotSurveys';
 import Measure from './core/widgets/Measure';
 import AddLayers from './core/widgets/AddLayers';
+import TaxLotBuffer from './core/widgets/TaxLotBuffer';
 
 /**
  * config portal and auth
@@ -370,6 +371,14 @@ const loadApp = (authed: boolean): void => {
         widget: addLayers,
         text: 'Add Layers',
         icon: 'add-layer',
+      },
+      {
+        widget: new TaxLotBuffer({
+          view,
+          layer: taxLots,
+        }),
+        text: 'Tax Lot Buffer',
+        icon: 'rings',
       },
     ],
   });
