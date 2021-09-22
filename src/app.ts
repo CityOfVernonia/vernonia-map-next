@@ -281,6 +281,14 @@ const loadApp = (authed: boolean): void => {
         snippet: 'DSL wetland layer.',
       },
       {
+        id: 'a9272516868344a9a37ba71fbe9ed1d7',
+        // title: 'Contours',
+        layerProperties: {
+          listMode: 'hide-children',
+          legendEnabled: false,
+        },
+      },
+      {
         id: '23d76fb1df104b3e95e8c972c7c87aa0',
         index: 0,
         // title: '2018 State Imagery',
